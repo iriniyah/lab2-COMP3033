@@ -1,0 +1,17 @@
+{
+  "name": "lab2",
+  "version": "1.0.0",
+  "description": "Calculator Web API",
+  "license": "ISC",
+  "author": "Shania Muller",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "connect": "^3.7.0",
+    "nodemon": "^3.1.10",
+    "url": "^0.11.4"
+  }
+}
