@@ -19,14 +19,16 @@ function calculator(req, res, next) {
     // Store the query parameters from the parsed URL as an Object
     let query = parsedUrl.query;
 
+    console.log(query.x);
+
     // Validates required query parameters
-    if (query.x == null || query.x.trim() == "") {
+    if (query.x == null) {
         res.statusCode = 400;
         res.end("ERROR! \nPlease provide a value for x.\nExample: x=2");
-    } else if (query.y == null || query.y.trim() == "") {
+    } else if (query.y == null) {
         res.statusCode = 400;
         res.end("ERROR! \nPlease provide a value for y.\nExample: y=4");
-    } else if (query.method == null || query.method.trim() == "") {
+    } else if (query.method == null) {
         res.statusCode = 400;
         res.end("ERROR! \nPlease provide a method type.\nAccepted Types: add, subtract, multiply, divide \nExample: method=add");
     } else {
