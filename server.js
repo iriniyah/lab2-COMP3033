@@ -1,91 +1,78 @@
 // Import Connect and URL
 const connect = require('connect');
-const { type } = require('os');
 const url = require('url');
 
-// App Object
+// Create App Object
 const app = connect();
 
-// Middlewear function for calculator 
+// Middleware function for calculator based off query parameters
 function calculator(req, res, next) {
-    // Set the content type as JSON
+    // Set the Content-Type as JSON
     res.setHeader("Content-Type", "application/json");
 
-    // Instantiate variables
-    let method, x, y, operation, result;
+    // Instantiate variables for query items
+    let x, y, method;
 
-    // Store the parsed URL as an object 
+    // Store the parsed URL as an Object 
     let parsedUrl = url.parse(req.url, true);
-    // Format the URL to get the queries (becomes a string)
-    let formattedUrl = url.format(parsedUrl);
-    // Remove the '/?' from the beginning of the string
-    let removedCharsURL = formattedUrl.slice(2);
-    // Separate the queries into an array
-    let queries = removedCharsURL.split("&");
 
-    // Array to check if all 3 components are available
-    let queryChecker = [false, false, false];
+    // Store the query parameters from the parsed URL as an Object
+    let query = parsedUrl.query;
 
-    // Loop to split each string at '=' and set each variable appropriately
-    for (var i = 0; i < queries.length; i++) {
-        // Split the string in each array index
-        queries[i] = queries[i].split("=");
-
-        // Switch statement to set each variable appropriately without the 
-        // user needing to commit to a specific order
-        switch (queries[i][0]) {
-            case 'method':
-                method = queries[i][1];
-                queryChecker[0] = true;
-                break;
-            case 'x':
-                x = Number(queries[i][1]);
-                queryChecker[1] = true;
-                break;
-            case 'y':
-                y = Number(queries[i][1]);
-                queryChecker[2] = true;
-            default:
-                break;
-        }
-    }
-
-    // Check if all components are present
-    if (queryChecker[0] == true && queryChecker[1] == true && queryChecker[2] == true) {
-        // Conduct calculation 
-        switch (method) {
-            case 'add':
-                result = x + y;
-                break;
-            case 'subtract':
-                result = x - y;
-                break;
-            case 'multiply':
-                result = x * y;
-                break;
-            case 'divide':
-                result = x / y;
-                break;
-            default:
-                res.end("Method type incorrect. Please enter 'add', 'subtract', 'multiply', or 'divide'.")
-                return;
-        }
-
-        // Response Object for the equation and parameters 
-        let equationResObj = {
-            x: x,
-            y: y,
-            operation: method,
-            result: result
-        };
-
-        // Converts the JSON Obj to a JSON formatted string to pass through the argument 
-        res.end(JSON.stringify(equationResObj));
+    // Validates required query parameters
+    if (query.x == null || query.x.trim() == "") {
+        res.statusCode = 400;
+        res.end("ERROR! \nPlease provide a value for x.\nExample: x=2");
+    } else if (query.y == null || query.y.trim() == "") {
+        res.statusCode = 400;
+        res.end("ERROR! \nPlease provide a value for y.\nExample: y=4");
+    } else if (query.method == null || query.method.trim() == "") {
+        res.statusCode = 400;
+        res.end("ERROR! \nPlease provide a method type.\nAccepted Types: add, subtract, multiply, divide \nExample: method=add");
     } else {
-        res.write("One or more queries are missing or incorrect.\n");
-        res.write("Required queries are:\n- x\n- y\n- method (add, subtract, multiply, divide)\n");
-        res.end("Please try again.");
+        // Assign variables using each property in the query object
+        // Convert x and y to number types
+        x = Number(query.x);
+        y = Number(query.y);
+        method = query.method;
+
+        if (isNaN(x) || isNaN(y)) {
+            res.statusCode = 400;
+            res.end("ERROR! \nPlease input a number as x and/or y.\nExample: x=5 y=44");
+        }
     }
+    
+    // Conduct calculation based off operation
+    switch (method) {
+        case 'add':
+            result = x + y;
+            break;
+        case 'subtract':
+            result = x - y;
+            break;
+        case 'multiply':
+                result = x * y;
+            break;
+        case 'divide':
+            result = x / y;
+            break;
+        default:
+            res.statusCode = 400;
+            res.end("ERROR\nMethod type incorrect. \nPlease enter 'add', 'subtract', 'multiply', or 'divide'.")
+            return;
+    }
+
+
+    // Store queries and result from calculation as response Object
+    let equationResObj = {
+        x: x,
+        y: y,
+        operation: method,
+        result: result
+    };
+
+    // Convert to a JSON formatted string and send as the response
+    res.end(JSON.stringify(equationResObj));
 }
 
 // Associate function to path
