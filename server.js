@@ -10,12 +10,44 @@ function calculator(req, res, next) {
     // Set the content type as JSON
     res.setHeader("Content-Type", "application/json");
 
-    // Response Object for the equation with placeholder data
+    // Instantiate variables
+    let method, x, y, operation;
+
+    // Store the parsed URL as an object 
+    let parsedUrl = url.parse(req.url, true);
+    // Format the URL to get the queries 
+    let formattedUrl = url.format(parsedUrl);
+    // Remove the '/?' from the beginning of the string
+    let removedCharsURL = formattedUrl.slice(2);
+    // Separate the queries into an array
+    let queries = removedCharsURL.split("&");
+    
+    // Loop to split each string at '=' and set each variable appropriately
+    for (var i = 0; i < 3; i++) {
+        // Split the string in each array index
+        queries[i] = queries[i].split("=");
+
+        // Switch statement to set each variable appropriately without the 
+        // user needing to commit to a specific order
+        switch (queries[i][0]) {
+            case 'method':
+                method = queries[i][1];
+                break;
+            case 'x':
+                x = queries[i][1];
+                break;
+            case 'y':
+                y = queries[i][1];
+            default:
+                break;
+        }
+    }
+
+    // Response Object for the equation and parameters 
     let equationResObj = {
-        x: 1,
-        y: 2,
-        operation: 3,
-        result: 24
+        x: x,
+        y: y,
+        operation: method
     };
 
     // Converts the JSON Obj to a JSON formatted string to pass through the argument 
