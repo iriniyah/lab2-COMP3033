@@ -19,8 +19,6 @@ function calculator(req, res, next) {
     // Store the query parameters from the parsed URL as an Object
     let query = parsedUrl.query;
 
-    console.log(query.x);
-
     // Validates required query parameters
     if (query.x == null) {
         res.statusCode = 400;
@@ -38,6 +36,7 @@ function calculator(req, res, next) {
         y = Number(query.y);
         method = query.method;
 
+        // Validates that x and y are numbers
         if (isNaN(x) || isNaN(y)) {
             res.statusCode = 400;
             res.end("ERROR! \nPlease input a number as x and/or y.\nExample: x=5 y=44");
@@ -63,7 +62,6 @@ function calculator(req, res, next) {
             res.end("ERROR\nMethod type incorrect. \nPlease enter 'add', 'subtract', 'multiply', or 'divide'.")
             return;
     }
-
 
     // Store queries and result from calculation as response Object
     let equationResObj = {
