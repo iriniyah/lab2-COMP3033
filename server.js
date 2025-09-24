@@ -23,12 +23,15 @@ function calculator(req, res, next) {
     if (query.x == null) {
         res.statusCode = 400;
         res.end("ERROR! \nPlease provide a value for x.\nExample: x=2");
+        return;
     } else if (query.y == null) {
         res.statusCode = 400;
         res.end("ERROR! \nPlease provide a value for y.\nExample: y=4");
+        return;
     } else if (query.method == null) {
         res.statusCode = 400;
         res.end("ERROR! \nPlease provide a method type.\nAccepted Types: add, subtract, multiply, divide \nExample: method=add");
+        return;
     } else {
         // Assign variables using each property in the query object
         // Convert x and y to number types
@@ -40,6 +43,7 @@ function calculator(req, res, next) {
         if (isNaN(x) || isNaN(y)) {
             res.statusCode = 400;
             res.end("ERROR! \nPlease input a number as x and/or y.\nExample: x=5 y=44");
+            return;
         }
     }
     
