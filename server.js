@@ -22,9 +22,12 @@ function calculator(req, res, next) {
     let removedCharsURL = formattedUrl.slice(2);
     // Separate the queries into an array
     let queries = removedCharsURL.split("&");
-    
+
+    // Array to check if all 3 components are available
+    let queryChecker = [false, false, false];
+
     // Loop to split each string at '=' and set each variable appropriately
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < queries.length; i++) {
         // Split the string in each array index
         queries[i] = queries[i].split("=");
 
@@ -33,19 +36,23 @@ function calculator(req, res, next) {
         switch (queries[i][0]) {
             case 'method':
                 method = queries[i][1];
+                queryChecker[0] = true;
                 break;
             case 'x':
                 x = Number(queries[i][1]);
+                queryChecker[1] = true;
                 break;
             case 'y':
                 y = Number(queries[i][1]);
+                queryChecker[2] = true;
             default:
                 break;
         }
     }
 
-    if (typeof method === "string" && typeof x === 'number' && typeof y === 'number') {
-        console.log(method);
+    // Check if all components are present
+    if (queryChecker[0] == true && queryChecker[1] == true && queryChecker[2] == true) {
+        // Conduct calculation 
         switch (method) {
             case 'add':
                 result = x + y;
@@ -61,22 +68,24 @@ function calculator(req, res, next) {
                 break;
             default:
                 res.end("Method type incorrect. Please enter 'add', 'subtract', 'multiply', or 'divide'.")
-                break;
+                return;
         }
+
+        // Response Object for the equation and parameters 
+        let equationResObj = {
+            x: x,
+            y: y,
+            operation: method,
+            result: result
+        };
+
+        // Converts the JSON Obj to a JSON formatted string to pass through the argument 
+        res.end(JSON.stringify(equationResObj));
     } else {
-        res.write("One of the parameters is missing or incorrect. Please try again.");
+        res.write("One or more queries are missing or incorrect.\n");
+        res.write("Required queries are:\n- x\n- y\n- method (add, subtract, multiply, divide)\n");
+        res.end("Please try again.");
     }
-
-    // Response Object for the equation and parameters 
-    let equationResObj = {
-        x: x,
-        y: y,
-        operation: method,
-        result: result
-    };
-
-    // Converts the JSON Obj to a JSON formatted string to pass through the argument 
-    res.end(JSON.stringify(equationResObj));
 }
 
 // Associate function to path
